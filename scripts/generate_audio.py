@@ -6,7 +6,6 @@ The primary source is `scripts/import_desktop_audio.py`, which imports
 them to core/static/core/audio/.
 
 Use this generator only if you want to fall back to 100% synthesized CC0 audio.
-"""
 
 Key improvements over the first pass:
 - Heavy low-pass filtering so high frequencies are warm, not piercing
@@ -42,13 +41,28 @@ def write_wav(name, signal):
 
 
 def to_ogg(wav_path):
-    if not os.path.exists("/usr/local/bin/ffmpeg") and not _which("ffmpeg"):
+    # OGG conversion is best-effort and optional. WAV plays natively in all
+    # browsers, so we always keep the WAV. This avoids hard dependency on
+    # ffmpeg/libvorbis (e.g. on CI without the full ffmpeg build).
+    try:
+        subprocess.run(
+            ["/opt/homebrew/bin/ffmpeg", "-version"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=True,
+        )
+    except Exception:
         return wav_path
     ogg_path = wav_path.replace(".wav", ".ogg")
     try:
         subprocess.run(
-            ["ffmpeg", "-y", "-loglevel", "error", "-i", wav_path, "-c:a", "libvorbis", "-q:a", "3", ogg_path],
+            [
+                "/opt/homebrew/bin/ffmpeg", "-y", "-loglevel", "error",
+                "-i", wav_path, "-c:a", "libvorbis", "-q:a", "3", ogg_path,
+            ],
             check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
         )
         os.remove(wav_path)
         return ogg_path
