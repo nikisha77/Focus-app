@@ -1,0 +1,15 @@
+/* Scene styling baseline (most layout lives in ui.css) */
+
+html, body {
+  height: 100%;
+  overflow-y: auto;
+}
+
+#scene-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}

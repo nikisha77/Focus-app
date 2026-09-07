@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Focus Flow</title>
+  <link rel="stylesheet" href="{% static 'core/css/scene.css' %}">
+  <link rel="stylesheet" href="{% static 'core/css/ui.css' %}">
+</head>
+<body class="palette-day">
+  <canvas id="scene-canvas"></canvas>
+
+  <div class="bg-overlay"></div>
+
+  <main class="app">
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand-mark">◐</span>
+        <h1>Focus Flow</h1>
+      </div>
+      <button id="palette-toggle" class="icon-btn" aria-label="Toggle palette" title="Day / Night">
+        <span class="palette-icon">☀</span>
+      </button>
+    </header>
+
+    <div class="grid">
+      <section class="panel panel-timer">
+        <div class="panel-head">
+          <h2>Timer</h2>
+          <span class="badge" id="timer-mode-badge">Focus</span>
+        </div>
+        <div class="timer-display" id="timer-display">25:00</div>
+        <div class="timer-meta">
+          <label>Focus
+            <input type="number" id="focus-min" min="1" max="120" value="25">
+          </label>
+          <label>Break
+            <input type="number" id="break-min" min="1" max="60" value="5">
+          </label>
+        </div>
+        <div class="timer-controls">
+          <button id="timer-start" class="btn primary">Start</button>
+          <button id="timer-reset" class="btn ghost">Reset</button>
+        </div>
+        <div class="stat">
+          <span class="stat-num" id="session-count">{{ completed_sessions }}</span>
+          <span class="stat-label">sessions completed</span>
+        </div>
+      </section>
+
+      <section class="panel panel-audio">
+        <div class="panel-head">
+          <h2>Sound Mixer</h2>
+          <span class="badge subtle">3 tracks</span>
+        </div>
+        <div class="audio-tracks">
+          <div class="track">
+            <div class="track-label">
+              <span class="track-dot"></span>Flowers
+            </div>
+            <input type="range" min="0" max="100" value="0" data-track="flowers" aria-label="Flowers volume">
+          </div>
+          <div class="track">
+            <div class="track-label">
+              <span class="track-dot"></span>Daydreams
+            </div>
+            <input type="range" min="0" max="100" value="0" data-track="daydreams" aria-label="Daydreams volume">
+          </div>
+          <div class="track">
+            <div class="track-label">
+              <span class="track-dot"></span>Purple Dream
+            </div>
+            <input type="range" min="0" max="100" value="0" data-track="purpledream" aria-label="Purple Dream volume">
+          </div>
+        </div>
+        <button id="audio-stop" class="btn ghost small">Stop all audio</button>
+        <div class="audio-status" id="audio-status">Drag a slider to start mixing</div>
+      </section>
+
+      <section class="panel panel-tasks">
+        <div class="panel-head">
+          <h2>Tasks</h2>
+          <span class="badge subtle" id="task-count">0</span>
+        </div>
+        <form id="task-add-form" class="task-add" autocomplete="off">
+          <input type="text" name="text" placeholder="Add a task..." maxlength="200" required>
+          <button type="submit" class="btn primary">Add</button>
+        </form>
+        <ul class="task-list" id="task-list">
+          {% for task in tasks %}
+            <li class="task {% if task.done %}done{% endif %}" data-id="{{ task.id }}">
+              <button class="check" data-action="toggle" aria-label="Toggle done">{% if task.done %}✓{% else %}○{% endif %}</button>
+              <span class="task-text">{{ task.text }}</span>
+              <button class="delete" data-action="delete" aria-label="Delete">×</button>
+            </li>
+          {% empty %}
+            <li class="empty" id="task-empty">No tasks yet.</li>
+          {% endfor %}
+        </ul>
+      </section>
+    </div>
+  </main>
+
+  <audio id="audio-flowers" loop preload="none" src="{% static 'core/audio/flowers.wav' %}"></audio>
+  <audio id="audio-daydreams" loop preload="none" src="{% static 'core/audio/daydreams.wav' %}"></audio>
+  <audio id="audio-purpledream" loop preload="none" src="{% static 'core/audio/purpledream.wav' %}"></audio>
+
+  <script src="{% static 'core/js/scene.js' %}"></script>
+  <script src="{% static 'core/js/audio.js' %}"></script>
+  <script src="{% static 'core/js/timer.js' %}"></script>
+  <script src="{% static 'core/js/tasks.js' %}"></script>
+</body>
+</html>
